@@ -1,0 +1,27 @@
+Options -Indexes
+DirectoryIndex index.php
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Block hidden files and directories.
+    RewriteRule (^|/)\. - [F,L]
+
+    # Protect application source and internal directories.
+    RewriteRule ^(vendor|config|db|Core|src|routes|tests|logs)(/|$) - [F,L]
+
+    # Protect sensitive root-level files.
+    RewriteRule ^(bootstrap\.php|load_env\.php|phinx\.php)$ - [F,L]
+
+    # Allow existing public files and directories.
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Send application requests through the front controller.
+    RewriteRule ^ index.php [QSA,L]
+</IfModule>
+
+<FilesMatch "^(composer\.(json|lock)|phinx\.php|bootstrap\.php|load_env\.php)$">
+    Require all denied
+</FilesMatch>
